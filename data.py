@@ -22,14 +22,14 @@ def on_message(ws, message):
     dump = (json.dumps(data, indent=2))
     if (data.get("type") == "trade"):
         print(dump)
-        for trade in data.get("data"):
+        for trade in data.get("data", []):
             #get relevant information
             t_ms = trade.get("t", -1)
             price = trade.get("p", -1)
             volume = trade.get("v", -1)
             ticker = trade.get("s", -1)
 
-            if (t_ms == -1 or price == -1 or volume == -1 or ticker == 1):
+            if (t_ms == -1 or price == -1 or volume == -1 or ticker == -1):
                 print("Error values, trade skipped.")
                 continue
 
@@ -38,13 +38,15 @@ def on_message(ws, message):
             date = dt_et.date()
             hour = dt_et.hour
             minute = dt_et.minute
+            index = f"{hour:02d}:{minute:02d}"
 
-            index = f"{hour}:{minute}"
+            tickerDict = dataset.get(ticker)
 
-            if (index in dataset.get[ticker]):
+            if (index in dataset.get(ticker)):
                 print("update")
             else:
                 print("Create")
+                tickerDict.update({index: "placeholder"})
 
             #print(f"{date}, {hour}, {minute}, {t_min}, {price}, {volume}, {ticker}")
 
