@@ -7,6 +7,7 @@ import websocket
 import threading
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import candle
 
 #dataset of candles
 dataset = {}
@@ -23,19 +24,29 @@ def on_message(ws, message):
         print(dump)
         for trade in data.get("data"):
             #get relevant information
-            t_ms = trade["t"]
-            price = trade["p"]
-            volume = trade["v"]
-            ticker = trade["s"]
-            t_min = t_ms // 60000
-            
+            t_ms = trade.get("t", -1)
+            price = trade.get("p", -1)
+            volume = trade.get("v", -1)
+            ticker = trade.get("s", -1)
+
+            if (t_ms == -1 or price == -1 or volume == -1 or ticker == 1):
+                print("Error values, trade skipped.")
+                continue
+
             #gets time info
             dt_et = datetime.fromtimestamp(t_ms / 1000, tz=ZoneInfo("America/New_York"))
             date = dt_et.date()
             hour = dt_et.hour
             minute = dt_et.minute
 
-            print(f"{date}, {hour}, {minute}, {t_min}, {price}, {volume}, {ticker}")
+            index = f"{hour}:{minute}"
+
+            if (index in dataset.get[ticker]):
+                print("update")
+            else:
+                print("Create")
+
+            #print(f"{date}, {hour}, {minute}, {t_min}, {price}, {volume}, {ticker}")
 
 
 
@@ -45,6 +56,7 @@ def on_open(ws):
     for ticker in tickers:
         print(f"Connecting to {ticker}")
         ws.send(json.dumps({"type": "subscribe", "symbol": ticker}))
+        dataset.update({ticker:{}})
 
 
 #when closing the websocket
