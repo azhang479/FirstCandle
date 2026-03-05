@@ -1,4 +1,4 @@
-class candle:
+class Candle:
     "represents a candle"
     minute: int
     open:   float
@@ -39,5 +39,14 @@ class candle:
         self.volume += volume
         self.opened = False
 
+    def setUnusable(self):
+        self.useable = False
+
     def exportCandleInfo(self):
         return [self.minute, self.open, self.high, self.low, self.close, self.volume, self.useable]
+        
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return f"Candle(min={self.minute}, O={self.open}, H={self.high}, L={self.low}, C={self.close}, V={self.volume}, usable = {self.useable})"
