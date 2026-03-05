@@ -1,14 +1,17 @@
 class Candle:
     #represents a candle
 
-    minute: int     # opening minute
-    open:   float   # open price
-    close:  float   # closing price
-    low:    float   # low of the minute
-    high:   float   # high of the minute
-    volume: float   # total volume traded in the minute
-    opened: bool    # if the candle is currently trading
-    useable: float  # if the candle is useable
+    minute:     int     # opening minute
+    length:     int     # length of candle in minutes
+    open:       float   # open price
+    close:      float   # closing price
+    low:        float   # low of the minute
+    high:       float   # high of the minute
+    volume:     float   # total volume traded in the minute
+    opened:     bool    # if the candle is currently trading
+    useable:    float   # if the candle is useable
+    lastPrice:  int     # the last price of the candle
+    errored:    bool    # if the candle has errored
 
     """
     Initializes a candle
@@ -20,8 +23,9 @@ class Candle:
     Outputs:
     -- None
     """
-    def __init__(self, minute, price, volume):
+    def __init__(self, minute, length, price, volume):
         self.minute = minute
+        self.length = length
         self.open = price
         self.high = price
         self.low = price
@@ -29,6 +33,8 @@ class Candle:
         self.volume = volume
         self.opened = True
         self.useable = True
+        self.lastPrice = price
+        self.errored = False
 
 
     """
@@ -45,12 +51,15 @@ class Candle:
     """
     def updateCandle(self, price, volume):
         if (not self.opened):
-            print("ERROR, tried to access a closed or nonexistent candle.")
+            print("UPDATE ERROR, tried to access a closed or nonexistent candle.")
             self.useable = False
+            self.errored = True
 
-        self.high = max(self.low, price)
+
+        self.high = max(self.high, price)
         self.low = min(self.low, price)
         self.volume += volume
+        self.lastPrice = price
 
 
     """
@@ -65,15 +74,13 @@ class Candle:
     Prints an error if the candle is not currently being traded (this should not happen ever)
     If it does occur, the candle is no longer usable. 
     """
-    def closeCandle(self, price, volume):
+    def closeCandle(self):
         if (not self.opened):
-            print("ERROR, tried to access a closed or nonexistent candle.")
+            print("CLOSE ERROR, tried to access a closed or nonexistent candle.")
             self.useable = False
+            self.errored = True
 
-        self.high = max(self.low, price)
-        self.low = min(self.low, price)
-        self.close = price
-        self.volume += volume
+        self.close = self.lastPrice
         self.opened = False
 
     
@@ -90,10 +97,10 @@ class Candle:
     Inputs:
     -- None
     Outputs:
-    -- List of candle values as: [minute, open, high, low, close, volume, usability]
+    -- List of candle values as: [minute, length, open, high, low, close, volume, usability]
     """
     def exportCandleInfo(self):
-        return [self.minute, self.open, self.high, self.low, self.close, self.volume, self.useable]
+        return [self.minute, self.length, self.open, self.high, self.low, self.close, self.volume, self.useable, self.lastPrice, self.errored]
         
 
     def __repr__(self):
@@ -101,4 +108,4 @@ class Candle:
 
 
     def __str__(self):
-        return f"Candle(min={self.minute}, O={self.open}, H={self.high}, L={self.low}, C={self.close}, V={self.volume}, usable = {self.useable})"
+        return f"Candle(min={self.minute}, length={self.length} O={self.open}, H={self.high}, L={self.low}, C={self.close}, V={self.volume}, usable={self.useable}, lastPrice={self.lastPrice}, errored={self.errored})"
