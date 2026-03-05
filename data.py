@@ -83,12 +83,41 @@ def stop_ws():
     print(dataset)
     ws.close()
 
+"""
+Ticker function to tick
+Input:
+-- ticker: The ticker of the candles you'd like to look at
+-- start: the beginning of the consolidation in index (f"{hour:02d}:{minute:02d}") format
+-- timeFrame: number of minutes to consolidate
+Output:
+-- The OHLCV of the consolidated candle
+If any candle is unusable, it will be replaced with the nearest useable candle.
+If none exists all return values will be -1.
+Use: consolidateCandles("AAPL", '09:30', 5) will give a 5 minute candle starting at 09:30.
+"""
 
-def second_count(count):
+def secondCount(count):
     if (tick):
         print(count)
-        seconds = threading.Timer(1, second_count, args=(count + 1,))
+        seconds = threading.Timer(1, secondCount, args=(count + 1,))
         seconds.start()
+
+"""
+Consolidates multiple candles into a larger candle
+
+Input:
+-- ticker: The ticker of the candles you'd like to look at
+-- start: The beginning of the consolidation in index (f"{hour:02d}:{minute:02d}") format
+-- timeFrame: Number of minutes to consolidate
+Output:
+-- The OHLCV of the consolidated candle
+
+If any candle is unusable, it will be replaced with the nearest useable candle.
+If none exists all return values will be -1.
+Use: consolidateCandles("AAPL", '09:30', 5) will give a 5 minute candle starting at 09:30.
+"""
+def consolidateCandles(ticker, start, timeFrame):
+    pass
 
 if __name__ == "__main__":
     ws = websocket.WebSocketApp(
@@ -102,7 +131,7 @@ if __name__ == "__main__":
     timer.start()
 
     print("running")
-    second_count(1)
+    secondCount(1)
 
     ws.run_forever()
 
